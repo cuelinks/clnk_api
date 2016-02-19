@@ -8,7 +8,10 @@ module ClnkApi
     end
 
     def validate_url(url)
-      object = eval(url)
+      begin
+        object = eval(url)
+      end
+      object ||= url
       case object.class.to_s
       when "String"
         raise ClnkApi::General.new("Url is invalid.") unless  url =~ /\A#{URI::regexp(['http', 'https'])}\z/
