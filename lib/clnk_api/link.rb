@@ -1,26 +1,22 @@
 module ClnkApi
   class Link 
     include HTTParty
-    base_uri 'http://api.clnk.in'
-    attr_accessor :long_url, :short_url, :short_code,:api_key,:clicks, :bulk_response
+    base_uri 'http://localhost:3000'
+    attr_accessor :long_url, :short_url, :short_code,:api_key,:clicks, :bulk_urls
     def initialize(api_key)
       @api_key = api_key
     end
 
-    def validate_url(url)
-      begin
-        object = eval(url)
-      end
-      object ||= url
-      case object.class.to_s
+    def validate_url(urls)
+      case urls.class.to_s
       when "String"
-        raise ClnkApi::General.new("Url is invalid.") unless  url =~ /\A#{URI::regexp(['http', 'https'])}\z/
+        raise ClnkApi::General.new("Url is invalid.") unless  urls =~ /\A#{URI::regexp(['http', 'https'])}\z/
       when "Array"
-        object.each do |url|
+        urls.each do |url|
           raise ClnkApi::General.new("Url is invalid.") unless  url =~ /\A#{URI::regexp(['http', 'https'])}\z/
         end
       when "Hash"
-        object.each do |k, url|
+        urls.each do |k, url|
           raise ClnkApi::General.new("Url is invalid.") unless  url =~ /\A#{URI::regexp(['http', 'https'])}\z/
         end
       end
@@ -52,7 +48,7 @@ module ClnkApi
 
     def bulk_shorten(urls)
       validate_url(urls)
-      options = {:body=>{:urls=> urls,:access_token=>@api_key} }
+      options = {:body=>{:urls=> urls.to_json,:access_token=>@api_key} }
       response = self.class.post("/api/v1/links/bulk_shorten", options)
       handle_bulk_response(response)
     end
@@ -94,7 +90,7 @@ module ClnkApi
     end
 
     def bulk_response(response)
-      self.bulk_response = response.body
+      self.bulk_urls = response.body
     end
 
   end
