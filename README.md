@@ -25,6 +25,7 @@ Or install it yourself as:
     link = clnk.shorten(url) # return ClnkApi::Link
     link = clnk.expand("shortcode") # return ClnkApi::Link
     link = clnk.info("shorturl") # return ClnkApi::Link
+    link = clnk.bulk(urls) # where urls can be Array or Hash
     
 
 ## Contributing
